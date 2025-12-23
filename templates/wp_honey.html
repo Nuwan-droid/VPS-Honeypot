@@ -1,81 +1,240 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Web Honeypot — Fake Admin Login</title>
-  <style>
-    body { font-family: Inter, Roboto, sans-serif; background:#f5f7fb; color:#222; }
-    .wrap{ max-width:420px;margin:6% auto;background:#fff;padding:28px;border-radius:8px;box-shadow:0 6px 18px rgba(20,30,60,.08)}
-    h1{font-size:20px;margin:0 0 12px}
-    label{display:block;font-size:13px;margin:10px 0 6px}
-    input[type=text],input[type=password]{width:100%;padding:10px;border:1px solid #d9e0ea;border-radius:6px}
-    button{margin-top:14px;width:100%;padding:10px;border:0;background:#0b69ff;color:#fff;border-radius:6px;font-weight:600}
-    .note{font-size:12px;color:#666;margin-top:10px}
-    .tiny{font-size:11px;color:#888;margin-top:6px}
-    pre#captured{background:#0f1724;color:#cce7ff;padding:12px;border-radius:6px;overflow:auto}
-  </style>
-  <meta name="description" content="Simple web honeypot example — fake admin login that captures credentials locally and posts to /log endpoint.">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Log In ‹ My Site — WordPress</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+            background: #f0f0f1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        #login {
+            width: 320px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        h1 a {
+            background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiQqvP9mSAN_KNxZlbvD9VT-yl4Vf_PuT6Cw&s');
+            background-size: contain;
+            background-position: center top;
+            background-repeat: no-repeat;
+            height: 84px;
+            width: 84px;
+            margin: 0 auto 25px;
+            display: block;
+            text-indent: -9999px;
+            outline: none;
+            overflow: hidden;
+            padding: 0;
+        }
+
+        #loginform {
+            background: #fff;
+            border: 1px solid #c3c4c7;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+            padding: 26px 24px 46px;
+            font-weight: 400;
+        }
+
+        .login-username,
+        .login-password {
+            margin-bottom: 16px;
+        }
+
+        label {
+            color: #2c3338;
+            display: block;
+            font-size: 14px;
+            font-weight: 400;
+            margin-bottom: 6px;
+        }
+
+        input[type="text"],
+        input[type="password"] {
+            background-color: #fff;
+            border: 1px solid #8c8f94;
+            border-radius: 4px;
+            color: #2c3338;
+            font-size: 24px;
+            width: 100%;
+            padding: 3px 8px;
+            line-height: 1.33333333;
+            outline: none;
+            transition: border-color 0.1s ease-in-out, box-shadow 0.1s ease-in-out;
+        }
+
+        input[type="text"]:focus,
+        input[type="password"]:focus {
+            border-color: #2271b1;
+            box-shadow: 0 0 0 1px #2271b1;
+        }
+
+        .login-remember {
+            margin-top: 20px;
+            margin-bottom: 20px;
+        }
+
+        .login-remember label {
+            font-size: 12px;
+            display: inline;
+            margin-left: 5px;
+        }
+
+        input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            border: 1px solid #8c8f94;
+            border-radius: 4px;
+            vertical-align: middle;
+        }
+
+        .login-submit {
+            margin-top: 10px;
+        }
+
+        .wp-submit {
+            background: #2271b1;
+            border: 1px solid #2271b1;
+            border-radius: 3px;
+            color: #fff;
+            font-size: 14px;
+            height: 40px;
+            width: 100%;
+            cursor: pointer;
+            font-weight: 400;
+            padding: 0 12px;
+            text-decoration: none;
+            text-shadow: none;
+            transition: background 0.1s ease-in-out, border-color 0.1s ease-in-out;
+        }
+
+        .wp-submit:hover {
+            background: #135e96;
+            border-color: #135e96;
+        }
+
+        .wp-submit:active {
+            background: #135e96;
+            border-color: #0a4b78;
+            box-shadow: inset 0 2px 0 #0a4b78;
+        }
+
+        #nav {
+            margin: 24px 0 0;
+            text-align: center;
+        }
+
+        #nav a {
+            color: #50575e;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        #nav a:hover {
+            color: #135e96;
+        }
+
+        #backtoblog {
+            margin: 16px 0;
+            text-align: center;
+        }
+
+        #backtoblog a {
+            color: #50575e;
+            text-decoration: none;
+            font-size: 13px;
+        }
+
+        #backtoblog a:hover {
+            color: #135e96;
+        }
+
+        .language-switcher {
+            margin-top: 16px;
+            text-align: center;
+        }
+
+        .language-switcher label {
+            color: #50575e;
+            font-size: 13px;
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .language-switcher select {
+            padding: 3px 24px 3px 8px;
+            border: 1px solid #8c8f94;
+            border-radius: 3px;
+            font-size: 14px;
+            background: #fff;
+            color: #2c3338;
+        }
+
+        @media screen and (max-width: 400px) {
+            #login {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
-<body>
-  <main class="wrap" role="main">
-    <h1>Admin Login</h1>
-    <p class="tiny">This page is a demonstration web honeypot. Credentials entered are captured locally for analysis.</p>
+<body class="login login-action-login wp-core-ui">
+    <div id="login">
+        <h1><a href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSiQqvP9mSAN_KNxZlbvD9VT-yl4Vf_PuT6Cw&s">Powered by WordPress</a></h1>
 
-    <form id="loginForm">
-      <label for="user">Username</label>
-      <input id="username" name="user" type="text" required  />
+        <form name="loginform" id="loginform" action="/wp-admin-login" method="post">
+            <div class="login-username">
+                <label for="user_login">Username </label>
+                <input type="text" name="username" id="user_login" class="input" value="" size="20" autocapitalize="off" autocomplete="username" required="required">
+            </div>
 
-      <label for="pass">Password</label>
-      <input id="password" name="pass" type="password" required  />
+            <div class="login-password">
+                <label for="user_pass">Password</label>
+                <input type="password" name="password" id="user_pass" class="input" value="" size="20" autocomplete="current-password" spellcheck="false" required="required">
+            </div>
 
-      <button type="submit">Log In</button>
-    </form>
+            <div class="login-remember">
+                <label>
+                    <input name="rememberme" type="checkbox" id="rememberme" value="forever">
+                    Remember Me
+                </label>
+            </div>
 
-    <div class="note">Captured entries (for demo):</div>
-    <pre id="captured">(none)</pre>
+            <div class="login-submit">
+                <input type="submit" name="wp-submit" id="wp-submit" class="button button-primary button-large wp-submit" value="Log In">
+            </div>
+        </form>
 
-    <div class="tiny">To collect results centrally, point the fetch URL in the JS to your local collector endpoint (e.g., <code>/log</code>).</div>
-  </main>
+        <p id="nav">
+            <a href="#">Lost your password?</a>
+        </p>
 
-  <script>
-    // Minimal client-side capture. This file intentionally does NOT exfiltrate to external hosts.
-    // Change the `endpoint` variable to collect to your own server (same-origin) if you have a backend.
-    (function(){
-      const endpoint = '/log'; // example endpoint on same host
-      const form = document.getElementById('loginForm');
-      const out = document.getElementById('captured');
+        <p id="backtoblog">
+            <a href="#">← Go to My Site</a>
+        </p>
 
-      function showCaptured(obj){
-        out.textContent = JSON.stringify(obj, null, 2);
-      }
-
-      form.addEventListener('submit', function(ev){
-        ev.preventDefault();
-        const user = document.getElementById('user').value || '';
-        const pass = document.getElementById('pass').value || '';
-        const capture = {ts: new Date().toISOString(), user: user, pass: pass, client: location.origin};
-
-        // Update local view
-        showCaptured(capture);
-
-        // Send to local collector if desired. Keep to same origin for safety.
-        // Uncomment and adapt the fetch below if you have a backend to receive logs.
-        /*
-        fetch(endpoint, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(capture)
-        }).then(r => console.log('sent', r.status)).catch(e => console.error('send error', e));
-        */
-
-        // show fake failure to keep attacker engaged
-        setTimeout(()=>{
-          alert('Login failed: Invalid credentials');
-          document.getElementById('pass').value = '';
-        }, 250);
-      });
-    })();
-  </script>
+        <div class="language-switcher">
+            <label for="language-switcher">Language</label>
+            <select name="locale" id="language-switcher">
+                <option value="en_US" selected>English (United States)</option>
+            </select>
+        </div>
+    </div>
 </body>
 </html>
