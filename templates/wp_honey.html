@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Web Honeypot — Fake Admin Login</title>
+  <style>
+    body { font-family: Inter, Roboto, sans-serif; background:#f5f7fb; color:#222; }
+    .wrap{ max-width:420px;margin:6% auto;background:#fff;padding:28px;border-radius:8px;box-shadow:0 6px 18px rgba(20,30,60,.08)}
+    h1{font-size:20px;margin:0 0 12px}
+    label{display:block;font-size:13px;margin:10px 0 6px}
+    input[type=text],input[type=password]{width:100%;padding:10px;border:1px solid #d9e0ea;border-radius:6px}
+    button{margin-top:14px;width:100%;padding:10px;border:0;background:#0b69ff;color:#fff;border-radius:6px;font-weight:600}
+    .note{font-size:12px;color:#666;margin-top:10px}
+    .tiny{font-size:11px;color:#888;margin-top:6px}
+    pre#captured{background:#0f1724;color:#cce7ff;padding:12px;border-radius:6px;overflow:auto}
+  </style>
+  <meta name="description" content="Simple web honeypot example — fake admin login that captures credentials locally and posts to /log endpoint.">
+</head>
+<body>
+  <main class="wrap" role="main">
+    <h1>Admin Login</h1>
+    <p class="tiny">This page is a demonstration web honeypot. Credentials entered are captured locally for analysis.</p>
+
+    <form id="loginForm">
+      <label for="user">Username</label>
+      <input id="username" name="user" type="text" required  />
+
+      <label for="pass">Password</label>
+      <input id="password" name="pass" type="password" required  />
+
+      <button type="submit">Log In</button>
+    </form>
+
+    <div class="note">Captured entries (for demo):</div>
+    <pre id="captured">(none)</pre>
+
+    <div class="tiny">To collect results centrally, point the fetch URL in the JS to your local collector endpoint (e.g., <code>/log</code>).</div>
+  </main>
+
+  <script>
+    // Minimal client-side capture. This file intentionally does NOT exfiltrate to external hosts.
+    // Change the `endpoint` variable to collect to your own server (same-origin) if you have a backend.
+    (function(){
+      const endpoint = '/log'; // example endpoint on same host
+      const form = document.getElementById('loginForm');
+      const out = document.getElementById('captured');
+
+      function showCaptured(obj){
+        out.textContent = JSON.stringify(obj, null, 2);
+      }
+
+      form.addEventListener('submit', function(ev){
+        ev.preventDefault();
+        const user = document.getElementById('user').value || '';
+        const pass = document.getElementById('pass').value || '';
+        const capture = {ts: new Date().toISOString(), user: user, pass: pass, client: location.origin};
+
+        // Update local view
+        showCaptured(capture);
+
+        // Send to local collector if desired. Keep to same origin for safety.
+        // Uncomment and adapt the fetch below if you have a backend to receive logs.
+        /*
+        fetch(endpoint, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(capture)
+        }).then(r => console.log('sent', r.status)).catch(e => console.error('send error', e));
+        */
+
+        // show fake failure to keep attacker engaged
+        setTimeout(()=>{
+          alert('Login failed: Invalid credentials');
+          document.getElementById('pass').value = '';
+        }, 250);
+      });
+    })();
+  </script>
+</body>
+</html>
